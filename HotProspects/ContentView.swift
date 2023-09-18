@@ -25,7 +25,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Two", systemImage: "circle")
                 }
-                .tag("Two")
+                .tag("Two") // tag is the selection handle.  Use something like a name for the tab or a static property on the struct
         }
     }
 }
