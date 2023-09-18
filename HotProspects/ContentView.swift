@@ -7,26 +7,29 @@
 
 import SwiftUI
 
-struct ContentView: View {
+
+@MainActor class DelayedUpdater: ObservableObject {
+    var value = 0 {
+        willSet {
+            objectWillChange.send() // equivalent to @Published property wrapper.  More control available in willSet observer
+        }
+    }
     
-    @State private var selectedTab = "One"
+    init() {
+        for i in 1...10 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i)) {
+                self.value += 1
+            }
+        }
+    }
+}
+
+
+struct ContentView: View {
+    @StateObject var updater = DelayedUpdater()
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            Text("Tab 1")
-                .onTapGesture {
-                    selectedTab = "Two"
-                }
-                .tabItem {
-                    Label("One", systemImage: "star")
-                }
-                .tag("One")
-            Text("Tab 2")
-                .tabItem {
-                    Label("Two", systemImage: "circle")
-                }
-                .tag("Two") // tag is the selection handle.  Use something like a name for the tab or a static property on the struct
-        }
+        Text("Value is \(updater.value)")
     }
 }
 
