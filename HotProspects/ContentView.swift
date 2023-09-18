@@ -7,14 +7,42 @@
 
 import SwiftUI
 
+
+@MainActor class User: ObservableObject {
+    @Published var name = "Steph Curry"
+}
+
+
+
+struct EditView: View {
+    @EnvironmentObject var user: User
+    
+    var body: some View {
+        TextField("Name", text: $user.name)
+    }
+}
+
+struct DisplayView: View {
+    @EnvironmentObject var user: User // Environment objects use the type as the key and the instance of the type as the value (like a Dict has can hold different types
+    
+    var body: some View {
+        Text(user.name)
+    }
+}
+
+
+
 struct ContentView: View {
+    
+    @StateObject var user = User()
+    
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            EditView()
+            DisplayView()
         }
+        .environmentObject(user)
         .padding()
     }
 }
