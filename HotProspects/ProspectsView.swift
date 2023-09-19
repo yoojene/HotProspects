@@ -29,7 +29,7 @@ struct ProspectsView: View {
     @EnvironmentObject var prospects: Prospects
     @State private var isShowingScanner = false
     @State private var showingDialog = false
-    @State private var filteredProspectsToShow = [Prospect]()
+    
     let filter: FilterType
     
     @State private var sort: SortType = .none
@@ -151,7 +151,7 @@ struct ProspectsView: View {
         case .latest:
             return filteredProspects.sorted(by: Prospect.latestDate)
         }
-    }    
+    }
     
     func handleScan(result: Result<ScanResult, ScanError>) {
         isShowingScanner = false
