@@ -8,28 +8,29 @@
 import SwiftUI
 
 
-@MainActor class DelayedUpdater: ObservableObject {
-    var value = 0 {
-        willSet {
-            objectWillChange.send() // equivalent to @Published property wrapper.  More control available in willSet observer
-        }
-    }
-    
-    init() {
-        for i in 1...10 {
-            DispatchQueue.main.asyncAfter(deadline: .now() + Double(i)) {
-                self.value += 1
-            }
-        }
-    }
-}
-
-
 struct ContentView: View {
-    @StateObject var updater = DelayedUpdater()
+    @State private var output = ""
     
     var body: some View {
-        Text("Value is \(updater.value)")
+        Text(output)
+            .task {
+                await fetchReadings()
+            }
+    }
+    
+    // Works but inflexible
+    // Cannot stash work away whilst other tasks happen
+    // read result elsewhere or cancel the process
+    func fetchReadings() async {
+        do {
+            let url = URL(string: "https://hws.dev/readings.json")!
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let readings = try JSONDecoder().decode([Double].self, from: data)
+            output = "Found \(readings.count) readings"
+        } catch {
+            print("error")
+        }
+        
     }
 }
 
