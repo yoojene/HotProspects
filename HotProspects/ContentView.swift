@@ -26,6 +26,7 @@ struct ContentView: View {
                     } label: {
                         Label("Pin", systemImage: "pin")
                     }
+                    .tint(.orange)
                 }
             
         }
