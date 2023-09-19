@@ -13,13 +13,26 @@ struct ProspectsView: View {
         case none, contacted, uncontacted
     }
     
+    // This gets updated each time the prospects array is appended to in ContentView
+    // which in turn reinvokes the body property and calculates filteredProspects (along with everything else)
+    // Everyone and Uncontacted tabs will show data, Contacted will not atm
+    
     @EnvironmentObject var prospects: Prospects
     let filter: FilterType
     
     
     var body: some View {
         NavigationView {
-            Text("People: \(prospects.people.count)")
+            List {
+                ForEach(filteredProspects) { prospect in
+                    VStack(alignment: .leading) {
+                        Text(prospect.name)
+                            .font(.headline)
+                        Text(prospect.emailAddress)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
                 .navigationTitle(title)
                 .toolbar {
                     Button{
@@ -47,6 +60,19 @@ struct ProspectsView: View {
             return "Uncontacted people"
         }
         
+    }
+    
+    
+    
+    var filteredProspects: [Prospect] {
+        switch filter {
+        case .none:
+            return prospects.people
+        case .contacted:
+            return prospects.people.filter { $0.isContacted }
+        case .uncontacted:
+            return prospects.people.filter { !$0.isContacted }
+        }
     }
 }
 
