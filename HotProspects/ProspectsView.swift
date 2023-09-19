@@ -33,6 +33,24 @@ struct ProspectsView: View {
                         Text(prospect.emailAddress)
                             .foregroundColor(.secondary)
                     }
+                    .swipeActions  {
+                        if prospect.isContacted {
+                            Button {
+                                // prospect.isContacted.toggle() // this will not work now as fileprivate (set)
+                                prospects.toggle(prospect) // call the new function on the array to also publish the change (objectWillChange)
+                            } label: {
+                                Label("Mark Uncontacted", systemImage: "person.crop.circle.badge.xmark")
+                            }
+                            .tint(.blue)
+                        } else {
+                            Button {
+                                prospects.toggle(prospect)
+                            } label: {
+                                Label("Mark Contacted", systemImage: "person.crop.circle.badge.checkmark")
+                            }
+                            .tint(.green)
+                        }
+                    }
                 }
             }
                 .navigationTitle(title)
