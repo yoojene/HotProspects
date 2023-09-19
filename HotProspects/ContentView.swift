@@ -14,10 +14,17 @@ struct ContentView: View {
         List {
             Text("Steph Curry")
                 .swipeActions {
-                    Button {
-                        print("Hi")
+                    Button(role: .destructive) {
+                        print("Deleting")
                     } label: {
-                        Label("Send message", systemImage: "message")
+                        Label("Delete", systemImage: "minus.circle")
+                    }
+                }
+                .swipeActions(edge: .leading) {
+                    Button {
+                        print("Pinning")
+                    } label: {
+                        Label("Pin", systemImage: "pin")
                     }
                 }
             
