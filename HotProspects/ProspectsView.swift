@@ -18,19 +18,27 @@ struct ProspectsView: View {
         case none, contacted, uncontacted
     }
     
+    enum SortType {
+        case none, name, latest
+    }
+    
     // This gets updated each time the prospects array is appended to in ContentView
     // which in turn reinvokes the body property and calculates filteredProspects (along with everything else)
     // Everyone and Uncontacted tabs will show data, Contacted will not atm
     
     @EnvironmentObject var prospects: Prospects
     @State private var isShowingScanner = false
+    @State private var showingDialog = false
+    @State private var filteredProspectsToShow = [Prospect]()
     let filter: FilterType
+    
+    @State private var sort: SortType = .none
     
     
     var body: some View {
         NavigationView {
             List {
-                ForEach(filteredProspects) { prospect in
+                ForEach(sortedProspects) { prospect in
                     HStack {
                         VStack(alignment: .leading) {
                          
@@ -74,17 +82,39 @@ struct ProspectsView: View {
                     }
                 }
             }
-                .navigationTitle(title)
-                .toolbar {
+            .navigationTitle(title)
+            .toolbar {
+                ToolbarItemGroup {
+                    Button {
+                        showingDialog = true
+                    } label: {
+                        Label("Filter", systemImage: "line.horizontal.3.decrease")
+                    }
                     Button{
                         isShowingScanner = true
                     } label: {
                         Label("Scan", systemImage: "qrcode.viewfinder")
                     }
+                    
                 }
-                .sheet(isPresented: $isShowingScanner) {
-                    CodeScannerView(codeTypes: [.qr], simulatedData: "Eugene Cross\neugene@genox.io", completion: handleScan)
+              
+            }
+            .sheet(isPresented: $isShowingScanner) {
+                CodeScannerView(codeTypes: [.qr], simulatedData: "Eugene Cross\neugene@genox.io", completion: handleScan)
+            }
+            .confirmationDialog("Sort", isPresented: $showingDialog) {
+                Button {
+                    sort = .name
+                } label : {
+                    Text("Name")
                 }
+                Button {
+                    sort = .latest
+                } label :{
+                    Text("Most Recent")
+                }
+            }
+            
         }
      
         
@@ -99,11 +129,8 @@ struct ProspectsView: View {
         case .uncontacted:
             return "Uncontacted people"
         }
-        
     }
-    
-    
-    
+
     var filteredProspects: [Prospect] {
         switch filter {
         case .none:
@@ -115,7 +142,16 @@ struct ProspectsView: View {
         }
     }
     
-    
+    var sortedProspects: [Prospect] {
+        switch sort {
+        case .none:
+            return filteredProspects
+        case .name:
+            return filteredProspects.sorted()
+        case .latest:
+            return filteredProspects.sorted(by: Prospect.latestDate)
+        }
+    }    
     
     func handleScan(result: Result<ScanResult, ScanError>) {
         isShowingScanner = false

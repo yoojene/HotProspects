@@ -7,11 +7,31 @@
 
 import SwiftUI
 
-class Prospect: Identifiable, Codable {
+class Prospect: Identifiable, Codable, Comparable {
+    static func == (lhs: Prospect, rhs: Prospect) -> Bool {
+        lhs.name == rhs.name
+    }
+    
     var id = UUID()
     var name = "Anonymous"
     var emailAddress = ""
     fileprivate(set) var isContacted = false
+    var dateAdded = Date.now
+    
+    static func < (lhs: Prospect, rhs: Prospect) -> Bool {
+        lhs.name < rhs.name || 
+        lhs.dateAdded < rhs.dateAdded
+    }
+    
+    static func latestDate(prospect1: Prospect, prospect2: Prospect) -> Bool {
+        if prospect1.dateAdded < prospect2.dateAdded {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+
 }
 
 @MainActor class Prospects: ObservableObject {
