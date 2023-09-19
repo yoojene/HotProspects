@@ -5,7 +5,6 @@
 //  Created by Eugene on 18/09/2023.
 //
 
-import SamplePackage
 import SwiftUI
 
 struct ContentView: View {
