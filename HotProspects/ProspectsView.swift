@@ -9,6 +9,9 @@ import CodeScanner
 import SwiftUI
 import UserNotifications
 
+
+
+
 struct ProspectsView: View {
     
     enum FilterType {
@@ -28,12 +31,21 @@ struct ProspectsView: View {
         NavigationView {
             List {
                 ForEach(filteredProspects) { prospect in
-                    VStack(alignment: .leading) {
-                        Text(prospect.name)
-                            .font(.headline)
-                        Text(prospect.emailAddress)
-                            .foregroundColor(.secondary)
+                    HStack {
+                        VStack(alignment: .leading) {
+                         
+                            Text(prospect.name)
+                                .font(.headline)
+                            Text(prospect.emailAddress)
+                                .foregroundColor(.secondary)
+                        }
+                        if (filter == .none) {
+                            Spacer()
+                            Image(systemName: prospect.isContacted ? "person.crop.circle.badge.checkmark" : "person.crop.circle.badge.xmark")
+                                .foregroundColor(prospect.isContacted ? .green : .blue)
+                        }
                     }
+         
                     .swipeActions  {
                         if prospect.isContacted {
                             Button {
